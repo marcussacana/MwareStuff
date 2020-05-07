@@ -1,8 +1,7 @@
 {
   "profiles": {
     "NPK3Tool": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Marcus\\Documents\\Downloads\\You and Me and Her\\script.npk~\""
+      "commandName": "Project"
     }
   }
 }

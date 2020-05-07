@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Text;
 using Zstandard.Net;
 
 namespace NPK3Tool
@@ -87,6 +88,28 @@ namespace NPK3Tool
             var Data = SHA256.ComputeHash(Stream);
             Stream.Position = OriPos;
             return Data;
+        }
+        public static Encoding ToEncoding(this string Value)
+        {
+            if (int.TryParse(Value, out int CP))
+                return Encoding.GetEncoding(CP);
+
+            return Value.ToLowerInvariant() switch
+            {
+                "sjis" => Encoding.GetEncoding(932),
+                "shiftjis" => Encoding.GetEncoding(932),
+                "shift-jis" => Encoding.GetEncoding(932),
+                "unicode" => Encoding.Unicode,
+                "utf16" => Encoding.Unicode,
+                "utf16be" => Encoding.BigEndianUnicode,
+                "utf16wb" => new UnicodeEncoding(false, true),
+                "utf16wbbe" => new UnicodeEncoding(true, true),
+                "utf16bewb" => new UnicodeEncoding(true, true),
+                "utf8" => Encoding.UTF8,
+                "utf8wb" => new UTF8Encoding(true),
+                "utf7" => Encoding.UTF7,
+                _ => Encoding.GetEncoding(Value)
+            };
         }
     }
 }

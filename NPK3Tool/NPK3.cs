@@ -92,7 +92,47 @@ namespace NPK3Tool
             }
         }
 
+        public static void SetIV(string IVHex) {
+            IVHex = IVHex.Trim().Replace(" ", "");
+            if (IVHex.Length != CurrentIV.Length * 2) {
+                Console.WriteLine("Warning: Invalid IV");
+                return;
+            }
+            for (int x = 0; x < IVHex.Length; x += 2) {
+                string HByte = IVHex.Substring(x, 2);
+                CurrentIV[x / 2] = Convert.ToByte(HByte, 16);
+            }
+        }
+        public static void SetKey(string KeyHex) {
+            CurrentKey = new byte[0x20];
+            KeyHex = KeyHex.Trim().Replace(" ", "");
+            if (KeyHex.Length != CurrentKey.Length * 2) {
+                Console.WriteLine("Warning: Invalid KEY");
+                return;
+            }
+            for (int x = 0; x < KeyHex.Length; x += 2) {
+                string HByte = KeyHex.Substring(x, 2);
+                CurrentKey[x / 2] = Convert.ToByte(HByte, 16);
+            }
+        }
+
+        public static void SetEncoding(string Name) {
+            Encoding = Name.ToEncoding();
+        }
+
+        public static void SetMaxSectionSize(string MaxSize) {
+            MaxSize = MaxSize.Trim();
+            if (MaxSize.ToLower().StartsWith("0x"))
+            {
+                MaxSize = MaxSize.Substring(2);
+                MaxSectionSize = uint.Parse(MaxSize, System.Globalization.NumberStyles.HexNumber);
+            }
+            else
+                MaxSectionSize = uint.Parse(MaxSize);
+        }
+
         public static NPK3Entry[] CreateInitialEntries(string[] Files, Stream[] Streams) {
+            Console.WriteLine("Loading Files...");
             List<NPK3Entry> Entries = new List<NPK3Entry>();
             for (int i = 0; i < Files.Length; i++) {
                 NPK3Entry Entry = new NPK3Entry();
