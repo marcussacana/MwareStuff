@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Text;
-using Zstandard.Net;
 
 namespace NPK3Tool
 {
@@ -31,7 +28,7 @@ namespace NPK3Tool
             }
 
             Console.WriteLine($"Game \"{Games.Keys.ElementAt(Current)}\" Selected");
-            CurrentKey = Games.Values.ElementAt(Current);
+            NPK3.CurrentKey = Games.Values.ElementAt(Current);
 
             if (args == null || args.Length == 0)
                 args = new[] { "-h" };
@@ -50,18 +47,18 @@ namespace NPK3Tool
                         Console.ReadKey();
                         break;
                     case "u":
-                        Unpack(args[++i], args[++i]);
+                        NPK3.Unpack(args[++i], args[++i]);
                         break;
                     case "r":
                         i += 2;
-                        Console.WriteLine("Repack Feature Not Impemented Yet!");
+                        NPK3.Repack(args[++i], args[++i]);
                         break;
                     default:
                         if (File.Exists(args[i])) {
-                            Unpack(args[i]);
+                            NPK3.Unpack(args[i]);
                         }
                         else if (Directory.Exists(args[i])) {
-                            Console.WriteLine("Repack Feature Not Implemented Yet!");
+                            NPK3.Repack(args[i]);
                         }
                         break;
                 }
@@ -75,87 +72,5 @@ namespace NPK3Tool
                 0xF2, 0x50, 0x25, 0xA1, 0x2D, 0xB5, 0x39, 0xF9, 0xCF, 0xD6, 0xE8, 0xE5, 0x79, 0x75, 0xB7, 0x98
             } }
         };
-
-        public static void Unpack(string Package, string OutDir = null) {
-            if (OutDir == null)
-                OutDir = Path.Combine(Path.GetDirectoryName(Package), Path.GetFileName(Package) + "~");
-
-            using (Stream NPK = File.Open(Package, FileMode.Open))
-            {
-                CurrentIV = NPK.ReadBytes(8, 0x10);
-                var Table = NPK3.GetEntryTable(NPK);
-                var Entries = NPK3.GetEntries(Table);
-
-                foreach (var Entry in Entries)
-                {
-                    string OutPath = Path.Combine(OutDir, Entry.FilePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
-
-                    if (!Directory.Exists(Path.GetDirectoryName(OutPath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(OutPath));
-
-                    using (Stream Output = File.Create(OutPath))
-                    {
-                        foreach (var Segment in Entry.SegmentsInfo)
-                        {
-                            long Offset = Segment.Offset;
-                            uint Size = Segment.AlignedSize;
-
-                            using (Stream Buffer = new MemoryStream())
-                            {
-                                var Reader = NPK.CreateStream(Offset, Size).CreateDecryptor(CurrentKey, CurrentIV);
-                                Reader.CopyTo(Buffer);
-
-                                Buffer.Position = 0;
-                                if (Segment.IsCompressed) {
-                                    var Decompressor = Buffer.CreateDecompressor();
-                                    Decompressor.CopyTo(Output);
-                                }
-                                else
-                                    Buffer.CopyTo(Output);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static byte[] CurrentKey;
-        public static byte[] CurrentIV;
-        static byte[] ReadBytes(this Stream Stream, int Pos, int Count) {
-            byte[] Buffer = new byte[Count];
-            Stream.Position = Pos;
-            Stream.Read(Buffer, 0, Count);
-            return Buffer;
-        }
-
-        public static uint ReadUInt32(this Stream Stream, int Pos) {
-            return BitConverter.ToUInt32(Stream.ReadBytes(Pos, 4), 0);
-        }
-
-        public static Stream CreateStream(this Stream Stream, long Pos, uint Size) {
-            return new VirtStream(Stream, Pos, Size);
-        }
-
-        public static Stream CreateDecryptor(this Stream Stream, byte[] Key, byte[] IV) {
-            var aes = Aes.Create();
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
-            aes.Key = Key;
-            if (IV != null)
-                aes.IV = IV;
-            var decryptor = aes.CreateDecryptor();
-            return new CryptoStream(Stream, decryptor, CryptoStreamMode.Read);
-        }
-
-        public static Stream CreateDecompressor(this Stream Stream) {
-            return new ZstandardStream(Stream, CompressionMode.Decompress, true);
-        }
-
-        public static Stream ToMemory(this Stream Stream) {
-            var NewStream = new MemoryStream();
-            Stream.CopyTo(NewStream);
-            NewStream.Position = 0;
-            return NewStream;
-        }
     }
 }

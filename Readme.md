@@ -2,7 +2,7 @@
 My tools to the Mware Engine  
 
 ### NPK3Tool
-Can extract the NPK3 Packages 
+Can extract/Repack the NPK3 Packages 
 
 #### Supported Games
 - You and Me and Her (Totono JastUSA)
