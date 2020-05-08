@@ -30,7 +30,7 @@ namespace NPK3Tool
                         Console.WriteLine($"{CurrentExe} [Options] -r InputDir Output.npk");
                         Console.WriteLine();
                         Console.WriteLine("Options:");
-                        Console.WriteLine("-IV [126bit hex]\t\t\tSet the repack IV");
+                        Console.WriteLine("-IV [128bit hex]\t\t\tSet the repack IV");
                         Console.WriteLine("-MS 0x20000\t\t\t\tSet the NPK section Size");
                         Console.WriteLine("-EC UTF8\t\t\t\tSet the NPK filename encoding");
                         Console.WriteLine("-KY [256bit hex]\t\t\tSet a custom encyption key");

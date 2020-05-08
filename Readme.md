@@ -2,13 +2,16 @@
 My tools to the Mware Engine  
 
 ### NPK3Tool
-Can extract/Repack the NPK3 Packages 
+Can extract/repack the NPK3 Packages 
+
+### NUTEditor
+A brute tool that aim to translate NUT files
 
 #### Supported Games
 - You and Me and Her (Totono JastUSA)
 
 ### MwareHook
-**WIP** StringReloads Plugin to translate the game text  
+**WIP** StringReloads Plugin to try find the game key
 
 
 ### Notes:
