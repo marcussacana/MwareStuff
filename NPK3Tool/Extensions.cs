@@ -60,18 +60,44 @@ namespace NPK3Tool
             return new CryptoStream(Stream, encryptor, CryptoStreamMode.Read);
         }
 
-        public static Stream CreateDecompressor(this Stream Stream)
+        public static Stream CreateDecompressor(this Stream Stream, int NpkVersion)
         {
-            return new ZstandardStream(Stream, CompressionMode.Decompress, true);
+            switch (NpkVersion)
+            {
+                case 3:
+                    return new ZstandardStream(Stream, CompressionMode.Decompress, true);
+                case 2:
+                    return new DeflateStream(Stream, CompressionMode.Decompress, true);
+                default:
+                    throw new NotSupportedException("NPK Version Not Supported");
+            }
         }
-        public static Stream Compress(this Stream Stream) {
+        public static Stream Compress(this Stream Stream, int NpkVersion)
+        {
             MemoryStream Compressed = new MemoryStream();
-            using var Compressor = new ZstandardStream(Compressed, CompressionMode.Compress, true);
-            Stream.CopyTo(Compressor);
-            Compressor.Close();
-            Compressed.Position = 0;
-            Stream.Position = 0;
-            return Compressed;
+            switch (NpkVersion) {
+                case 3:
+                    using (var Compressor = new ZstandardStream(Compressed, CompressionMode.Compress, true))
+                    {
+                        Stream.CopyTo(Compressor);
+                        Compressor.Close();
+                        Compressed.Position = 0;
+                        Stream.Position = 0;
+                        return Compressed;
+                    }
+                case 2:
+                    using (var Compressor = new DeflateStream(Compressed, CompressionLevel.Optimal, true))
+                    {
+                        Stream.CopyTo(Compressor);
+                        Compressor.Close();
+                        Compressed.Position = 0;
+                        Stream.Position = 0;
+                        return Compressed;
+                    }
+                default:
+                        throw new NotSupportedException("NPK Version Not Supported");
+
+            }
         }
 
         public static Stream ToMemory(this Stream Stream)

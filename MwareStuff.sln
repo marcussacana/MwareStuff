@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30001.183
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MwareHook", "MwareHook\MwareHook.csproj", "{5B8D4FA9-E2E4-4988-A98D-BB7108F0815F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MwareHook", "MwareHook\MwareHook.csproj", "{5B8D4FA9-E2E4-4988-A98D-BB7108F0815F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringReloads", "..\StringReloads\StringReloads\StringReloads.csproj", "{2CDADAF6-73C5-475D-9827-45B847ECC148}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPK3Tool", "NPK3Tool\NPK3Tool.csproj", "{25255408-D697-4C7D-94A0-D978701F7228}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUTEditor", "NUTEditor\NUTEditor.csproj", "{86456308-054E-4FF8-BDC3-5DFF45009EFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRLInjector", "SRLInjector\SRLInjector.csproj", "{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,15 @@ Global
 		{86456308-054E-4FF8-BDC3-5DFF45009EFE}.Release|x64.Build.0 = Release|Any CPU
 		{86456308-054E-4FF8-BDC3-5DFF45009EFE}.Release|x86.ActiveCfg = Release|Any CPU
 		{86456308-054E-4FF8-BDC3-5DFF45009EFE}.Release|x86.Build.0 = Release|Any CPU
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Debug|Any CPU.Build.0 = Debug|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Debug|x64.ActiveCfg = Debug|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Debug|x86.ActiveCfg = Debug|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Debug|x86.Build.0 = Debug|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Release|Any CPU.ActiveCfg = Release|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Release|x64.ActiveCfg = Release|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Release|x86.ActiveCfg = Release|x86
+		{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

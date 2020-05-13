@@ -7,7 +7,7 @@ namespace MwareHook
 {
     public class EntryPoint : IPlugin
     {
-        public string Name => throw new NotImplementedException();
+        public string Name => "MwareHook";
 
         public IAutoInstall[] GetAutoInstallers() => null;
 
@@ -17,7 +17,7 @@ namespace MwareHook
 
         public IStringModifier[] GetModifiers() => null;
 
-        public IMod[] GetMods() => null;
+        public IMod[] GetMods() => new IMod[] { new MwareKeyFinder() };
 
         public IReloader[] GetReloaders() => null;
 

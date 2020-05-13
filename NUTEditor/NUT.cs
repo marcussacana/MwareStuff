@@ -7,7 +7,8 @@ namespace NUTEditor
 {
     public class NUT
     {
-        Encoding Encoding = Encoding.UTF8;
+        //public Encoding Encoding = Encoding.UTF8;//Totono (Steam)
+        public Encoding Encoding = Encoding.GetEncoding(932);//JP Games
 
         readonly byte[] StringPrefix = new byte[] { 0x10, 0x00, 0x00, 0x08 };
         List<int> StringOffsets = new List<int>();
