@@ -9,9 +9,14 @@ A brute tool that aim to translate NUT files
 
 #### Supported Games
 - You and Me and Her (Totono JastUSA)
+- Tokyo Necro
+- Minikui Mojika no Ko
 
 ### MwareHook
-**WIP** StringReloads Plugin to try find the game key
+StringReloads Plugin to try find the game key
+
+### SRLInjector
+A User-Friendly Loader to the **MwareHook**
 
 
 ### Notes:
