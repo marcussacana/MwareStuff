@@ -1,0 +1,54 @@
+//------------------------------------------------
+//--- 010 Editor v10.0.1 Binary Template
+//
+//      File: NPK File Table
+//   Authors: Marcussacana
+//   Version: 1.0
+//   Purpose: 
+//  Category: 
+// File Mask: *.tbl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+typedef struct {
+        DisplayFormatHex();
+        SetForeColor( cRed );
+		uint64 Offset;
+        DisplayFormatHex();
+        SetForeColor( cBlue );
+		uint AlignedSize;
+        DisplayFormatHex();
+        SetForeColor( cGreen );
+		uint RealSize;
+        DisplayFormatHex();
+        SetForeColor( cAqua );
+		uint DecompressedSize;
+} NPKSegmentInfo;
+
+typedef struct 
+{
+    DisplayFormatHex();
+    SetForeColor( cDkRed );
+	byte SegmentationMode;
+    SetForeColor( cDkGreen );
+    DisplayFormatHex();
+    ushort FileNameSize;
+    SetForeColor( cLtGreen );
+	char FilePath[FileNameSize];
+    SetForeColor( cDkBlue );
+	uint FileSize;
+    DisplayFormatHex();
+    SetForeColor( cLtBlue );
+	byte SHA256[0x20];
+    SetForeColor( cPurple );
+    uint SegmentCount;	
+    SetBackColor( cDkBlue );
+	NPKSegmentInfo SegmentsInfo[SegmentCount];
+} NPK3Entry;
+
+
+while( !FEof() ) {
+    NPK3Entry Entry;
+}

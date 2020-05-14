@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="NPK File Table.bt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Zstandard.Net" Version="1.1.7" />
   </ItemGroup>
 

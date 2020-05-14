@@ -1,25 +1,25 @@
 ﻿using AdvancedBinary;
-using static NPK3Tool.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Security.Cryptography;
 using System.Linq;
 using System;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 namespace NPK3Tool
 {
     static class NPK
     {
+        public static bool EnableCompression = true;
+        public static bool EnableSegmentation = true;
         public static int NPKVersion = 3;
+        public static uint NPKMinorVersion = 1;//Not Sure
         public static uint MaxSectionSize = 0x20000;
         public static Encoding Encoding = Encoding.UTF8;
         public static string[] DontCompress = { "png", "ogg", "jpg", "mpg" };
 
         public static byte[] CurrentKey;
-        public static byte[] CurrentIV = new byte[0x10];
+        public static byte[] CurrentIV = new byte[] { 0x42, 0x79, 0x20, 0x4D, 0x61, 0x72, 0x63, 0x75, 0x73, 0x73, 0x61, 0x63, 0x61, 0x6E, 0x61, 0x00 };
 
         public static void Repack(string InputDirectory, string OutNPK = null) {
             InputDirectory = Path.GetFullPath(InputDirectory);
@@ -46,7 +46,7 @@ namespace NPK3Tool
                     default:
                         throw new NotSupportedException("NPK Version Not Supported");
                 }
-                Output.WriteUIn32(0x00000001u);//Encrypted?
+                Output.WriteUIn32(NPKMinorVersion);
 
                 Output.WriteBytes(CurrentIV);
                 Output.WriteUIn32((uint)FilesPath.Length);
@@ -68,7 +68,7 @@ namespace NPK3Tool
                 for (int i = 0; i < FilesData.Length; i++) {
                     Console.WriteLine($"Writing File: {RelativeFiles[i]}");
                     string Ext = Path.GetExtension(FilesPath[i]).ToLower().TrimStart('.');
-                    bool Compress = !DontCompress.Contains(Ext);
+                    bool Compress = EnableCompression && !DontCompress.Contains(Ext);
 
                     long ReadPos = 0;
                     for (int x = 0; x < Entries[i].SegmentsInfo.Length; x++) {
@@ -152,38 +152,34 @@ namespace NPK3Tool
                 Entry.SHA256 = Streams[i].SHA256Checksum();
 
                 long Reaming = Entry.FileSize;
-                switch (NPKVersion)
+                if (EnableSegmentation)
                 {
-                    case 3:
-                        Entry.SegmentsInfo = new NPKSegmentInfo[1 + (Entry.FileSize / MaxSectionSize)];
-                        for (int x = 0; x < Entry.SegmentsInfo.Length; x++)
+                    Entry.SegmentsInfo = new NPKSegmentInfo[1 + (Entry.FileSize / MaxSectionSize)];
+                    for (int x = 0; x < Entry.SegmentsInfo.Length; x++)
+                    {
+                        uint MaxBytes = Reaming < MaxSectionSize ? (uint)Reaming : MaxSectionSize;
+                        Entry.SegmentsInfo[x] = new NPKSegmentInfo()
                         {
-                            uint MaxBytes = Reaming < MaxSectionSize ? (uint)Reaming : MaxSectionSize;
-                            Entry.SegmentsInfo[x] = new NPKSegmentInfo()
-                            {
-                                Offset = 0,
-                                DecompressedSize = MaxBytes,
-                                RealSize = MaxBytes,
-                                AlignedSize = MaxBytes + (0x10 - (MaxBytes % 0x10))
-                            };
-
-                            Reaming -= MaxBytes;
-                        }
-                        break;
-                    case 2:
-                        Entry.SegmentationMode = 1;
-                        Entry.SegmentsInfo = new NPKSegmentInfo[] { 
-                            new NPKSegmentInfo(){ 
-                                Offset = 0,
-                                DecompressedSize = (uint)Reaming,
-                                RealSize = (uint)Reaming,
-                                AlignedSize = (uint)Reaming + (0x10 - ((uint)Reaming % 0x10))
-                            }
+                            Offset = 0,
+                            DecompressedSize = MaxBytes,
+                            RealSize = MaxBytes,
+                            AlignedSize = MaxBytes + (0x10 - (MaxBytes % 0x10))
                         };
-                        Reaming = 0;
-                        break;
-                    default:
-                        throw new NotSupportedException("NPK Version Not Supported");
+
+                        Reaming -= MaxBytes;
+                    }
+                }
+                else
+                {
+                    Entry.SegmentationMode = 1;
+                    Entry.SegmentsInfo = new NPKSegmentInfo[] {
+                        new NPKSegmentInfo(){
+                            Offset = 0,
+                            DecompressedSize = (uint)Reaming,
+                            RealSize = (uint)Reaming,
+                            AlignedSize = (uint)Reaming + (0x10 - ((uint)Reaming % 0x10))
+                        }
+                    };
                 }
 
                 Entries.Add(Entry);
