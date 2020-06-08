@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="RemoteControl">
       <HintPath>.\RemoteControl.dll</HintPath>
@@ -49,4 +52,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy  /Y "$(SolutionDir)MwareHook\bin\$(ConfigurationName)\netstandard2.0\MwareHook.dll" "$(TargetDir)\Plugins"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

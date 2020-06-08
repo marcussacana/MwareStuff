@@ -6,7 +6,8 @@ namespace MwareHook
 {
     unsafe static class ModuleInfo
     {
-        public static CodeInfo GetCodeInfo(void* Address) {
+        public static CodeInfo GetCodeInfo(void* Address)
+        {
             ulong PEStart = *(uint*)((byte*)Address + 0x3C) + (ulong)Address;
             ulong OptionalHeader = PEStart + 0x18;
 
@@ -14,10 +15,11 @@ namespace MwareHook
             uint EntryPoint = *(uint*)(OptionalHeader + 0x10);
             uint BaseOfCode = *(uint*)(OptionalHeader + 0x14);
 
-            return new CodeInfo() {
+            return new CodeInfo()
+            {
                 CodeAddress = ((byte*)Address) + BaseOfCode,
-                EntryPoint  = ((byte*)Address) + EntryPoint,
-                CodeSize    = SizeOfCode
+                EntryPoint = ((byte*)Address) + EntryPoint,
+                CodeSize = SizeOfCode
             };
         }
     }
@@ -26,5 +28,9 @@ namespace MwareHook
         public void* CodeAddress;
         public uint CodeSize;
         public void* EntryPoint;
+
+        public void* EndCodeAddress => (void*)((ulong)CodeAddress + CodeSize);
+
+        public bool AddressIsContained(void* Address) => Address >= CodeAddress && Address <= EndCodeAddress;
     }
 }

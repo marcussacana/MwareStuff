@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUTEditor", "NUTEditor\NUTEditor.csproj", "{86456308-054E-4FF8-BDC3-5DFF45009EFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRLInjector", "SRLInjector\SRLInjector.csproj", "{A7EB8124-BF10-4A89-8020-421ED5A8EFFF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5B8D4FA9-E2E4-4988-A98D-BB7108F0815F} = {5B8D4FA9-E2E4-4988-A98D-BB7108F0815F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
