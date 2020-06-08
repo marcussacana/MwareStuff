@@ -45,7 +45,7 @@ namespace MwareHook
                         bool Protected = CheckPattern((byte*)pExe + i, SteamStub);
                         if (Protected)
                         {
-                            User.ShowMessageBox("This Game is protected with the Steam Stub DRM\nTo the Key Finder worker you must crack it before.", "MwareKeyFinder - By Marcussacana", User.MBButtons.Ok, User.MBIcon.Error);
+                            User.ShowMessageBox("This Game is protected with the Steam Stub DRM\nTo the Key Finder works you must crack it before.", "MwareKeyFinder - By Marcussacana", User.MBButtons.Ok, User.MBIcon.Error);
                             break;
                         }
                     }
