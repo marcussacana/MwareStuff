@@ -84,16 +84,16 @@ namespace NUTEditor
             return Encoding.GetString(String);
         }
 
-        private byte[] ReplaceStringAt(byte[] Buffer, int Index, string Data) {
-            var PartA = Buffer.Take(Index);
-            var OriLen = ReadU32At(Buffer, Index);
-            var PartB = Buffer.Skip(Index + sizeof(uint) + (int)OriLen);
-            var NewData = Encoding.GetBytes(Data);
+        private byte[] ReplaceStringAt(byte[] BufferArr, int Index, string Data) {
+            var Buffer = new List<byte>(BufferArr);
+            var OriLen = ReadU32At(BufferArr, Index);
+            Buffer.RemoveRange(Index, sizeof(uint) + (int)OriLen);
 
-            return PartA
-                .Concat(BitConverter.GetBytes(NewData.Length))
-                .Concat(NewData)
-                .Concat(PartB).ToArray();
+            var NewContent = Encoding.GetBytes(Data);
+            var NewStrData = BitConverter.GetBytes(NewContent.Length).Concat(NewContent).ToArray();
+
+            Buffer.InsertRange(Index, NewStrData);
+            return Buffer.ToArray();
         }
 
         private uint ReadU32At(byte[] Buffer, int Index) {
