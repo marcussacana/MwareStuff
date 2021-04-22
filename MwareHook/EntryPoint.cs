@@ -11,6 +11,8 @@ namespace MwareHook
 
         public IAutoInstall[] GetAutoInstallers() => null;
 
+        public IEncoding[] GetEncodings() => null;
+
         public Hook[] GetHooks() => null;
 
         public IMatch[] GetMatchs() => null;
@@ -21,6 +23,6 @@ namespace MwareHook
 
         public IReloader[] GetReloaders() => null;
 
-        public void Initialize(Main Engine) { }
+        public void Initialize(SRL Engine) { }
     }
 }

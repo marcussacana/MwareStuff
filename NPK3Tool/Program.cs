@@ -9,6 +9,7 @@ namespace NPK3Tool
 {
     static class Program
     {
+        //The "MinorVersion" is just something that I suposed, and i'm not sure, maybe that is just a flag
         static string CurrentExe => Path.GetFileName(Assembly.GetExecutingAssembly().Location);
         static void Main(string[] args)
         {
@@ -45,7 +46,7 @@ namespace NPK3Tool
                         Console.WriteLine("Valid Game IDs:");
                         for (int x = 0; x < Games.Length; x++)
                         {
-                            Console.WriteLine($"{x}: {Games[x].Item1}");
+                            Console.WriteLine($"{x}: {Games[x].Game}");
                         }
 
                         Console.WriteLine();
@@ -146,23 +147,23 @@ namespace NPK3Tool
             {
                 foreach (var Game in Games)
                 {
-                    Console.WriteLine($"Type {Current++} to \"{Game.Item1}\"");
+                    Console.WriteLine($"Type {Current++} to \"{Game.Game}\"");
                 }
 
                 while (!int.TryParse(Console.ReadLine(), out Current))
                     continue;
             }
 
-            Console.WriteLine($"Game \"{Games[Current].Item1}\" Selected");
-            NPK.CurrentKey = Games[Current].Item2;
-            NPK.Encoding = Games[Current].Item3;
-            NPK.NPKVersion = Games[Current].Item4;
-            NPK.EnableSegmentation = Games[Current].Item5;
-            NPK.NPKMinorVersion = Games[Current].Item6;
+            Console.WriteLine($"Game \"{Games[Current].Game}\" Selected");
+            NPK.CurrentKey = Games[Current].Key;
+            NPK.Encoding = Games[Current].Encoding;
+            NPK.NPKVersion = Games[Current].NPKVersion;
+            NPK.EnableSegmentation = Games[Current].NPKSegmentation;
+            NPK.NPKMinorVersion = Games[Current].NPKMinorVersion;
         }
 
         //Name, Key, Encoding, NPKVersion, Segmentation, MinorVersion
-        readonly static (string, byte[], Encoding, int, bool, uint)[] Games = new[] {
+        readonly static (string Game, byte[] Key, Encoding Encoding, int NPKVersion, bool NPKSegmentation, uint NPKMinorVersion)[] Games = new[] {
             ("You and Me and Her (Jast USA)", new byte[] {
                 0xE7, 0xE8, 0xA5, 0xF9, 0x9B, 0xAF, 0x7C, 0x73, 0xAE, 0x6B, 0xDF, 0x3D, 0x8C, 0x90, 0x26, 0x2F,
                 0xF2, 0x50, 0x25, 0xA1, 0x2D, 0xB5, 0x39, 0xF9, 0xCF, 0xD6, 0xE8, 0xE5, 0x79, 0x75, 0xB7, 0x98
@@ -186,6 +187,10 @@ namespace NPK3Tool
            ("The Song of Saya (Steam)", new byte[] {
                0x76, 0x3A, 0x14, 0x33, 0x8B, 0x0D, 0xAC, 0x04, 0x0A, 0xCC, 0xFC, 0x13, 0x85, 0x1C, 0xFA, 0xCB,
                0xB2, 0x0B, 0x00, 0x0B, 0x01, 0xF8, 0x68, 0x48, 0x6B, 0x46, 0x0F, 0x8C, 0x34, 0xD4, 0x2A, 0x96
+           }, Encoding.GetEncoding(932), 2, false, 2u),
+           ("The Song of Saya (Steam) [+18]", new byte[] {
+               0xD0, 0xB7, 0x1F, 0x3C, 0x4E, 0x24, 0xCE, 0xCF, 0xDD, 0xEE, 0xA9, 0x1D, 0x24, 0xB0, 0x40, 0x32,
+               0x29, 0xA3, 0xE5, 0x33, 0x0D, 0x29, 0x51, 0x82, 0x60, 0x51, 0xD6, 0xC9, 0x4A, 0xF5, 0xAF, 0x54
            }, Encoding.GetEncoding(932), 2, false, 2u)
         };
     }
