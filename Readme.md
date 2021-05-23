@@ -17,6 +17,7 @@ A brute tool that aim to translate NUT files
 - Minikui Mojika no Ko
 - SoniComi (JastUSA)
 - The Song of Saya (Steam)
+- Kishin Houkou Demonbane
 
 ### MwareHook
 StringReloads Plugin to try find the game key
@@ -26,4 +27,4 @@ A User-Friendly Loader to the **MwareHook**
 
 
 ### Notes:
-If you know more games using the new version of the Mware engine, please report to me make this shit better :)
+Don't Request for a game support without test the **SRLInjector/MwareHook** before!

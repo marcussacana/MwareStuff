@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -15,6 +13,9 @@ namespace NPK3Tool
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+            //System.Diagnostics.Debugger.Launch();
+
+            Console.OutputEncoding = Encoding.Unicode;
             Console.Title = "NPK3Tool - By Marcussacana";
 
             if (args == null || args.Length == 0)
@@ -163,7 +164,7 @@ namespace NPK3Tool
         }
 
         //Name, Key, Encoding, NPKVersion, Segmentation, MinorVersion
-        readonly static (string Game, byte[] Key, Encoding Encoding, int NPKVersion, bool NPKSegmentation, uint NPKMinorVersion)[] Games = new[] {
+        readonly static (string Game, byte[] Key, Encoding Encoding, int NPKVersion, bool NPKSegmentation, uint NPKMinorVersion)[] Games = new (string Game, byte[] Key, Encoding Encoding, int NPKVersion, bool NPKSegmentation, uint NPKMinorVersion)[] {
             ("You and Me and Her (Jast USA)", new byte[] {
                 0xE7, 0xE8, 0xA5, 0xF9, 0x9B, 0xAF, 0x7C, 0x73, 0xAE, 0x6B, 0xDF, 0x3D, 0x8C, 0x90, 0x26, 0x2F,
                 0xF2, 0x50, 0x25, 0xA1, 0x2D, 0xB5, 0x39, 0xF9, 0xCF, 0xD6, 0xE8, 0xE5, 0x79, 0x75, 0xB7, 0x98
@@ -191,7 +192,11 @@ namespace NPK3Tool
            ("The Song of Saya (Steam) [+18]", new byte[] {
                0xD0, 0xB7, 0x1F, 0x3C, 0x4E, 0x24, 0xCE, 0xCF, 0xDD, 0xEE, 0xA9, 0x1D, 0x24, 0xB0, 0x40, 0x32,
                0x29, 0xA3, 0xE5, 0x33, 0x0D, 0x29, 0x51, 0x82, 0x60, 0x51, 0xD6, 0xC9, 0x4A, 0xF5, 0xAF, 0x54
-           }, Encoding.GetEncoding(932), 2, false, 2u)
+           }, Encoding.GetEncoding(932), 2, false, 2u),
+           ("Kishin Houkou Demonbane", new byte[] {
+                0xBE, 0x28, 0x02, 0xAD, 0x5E, 0x91, 0xDD, 0x8E, 0x26, 0xEA, 0xD6, 0xB1, 0x61, 0xFE, 0xDB, 0x8A,
+               0x17, 0xE2, 0x36, 0x2F, 0x53, 0x33, 0x6D, 0x1B, 0x17, 0xD8, 0x0A, 0xE9, 0x55, 0xC0, 0x5A, 0xED
+           }, Encoding.UTF8            , 2, false, 2u)
         };
     }
 }

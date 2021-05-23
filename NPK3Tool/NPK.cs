@@ -14,7 +14,7 @@ namespace NPK3Tool
         public static bool EnableSegmentation = true;
         public static int NPKVersion = 3;
         public static uint NPKMinorVersion = 1;//Not Sure
-        public static uint MaxSectionSize = 0x20000;
+        public static uint MaxSectionSize = 0x10000;
         public static Encoding Encoding = Encoding.UTF8;
         public static string[] DontCompress = { "png", "ogg", "jpg", "mpg" };
 
@@ -152,9 +152,17 @@ namespace NPK3Tool
                 Entry.SHA256 = Streams[i].SHA256Checksum();
 
                 long Reaming = Entry.FileSize;
-                if (EnableSegmentation)
+                if (EnableSegmentation || Reaming > uint.MaxValue)
                 {
+                    if (!EnableSegmentation) {
+                        var OriColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"Big File Detected: '{Entry.FilePath}', Enforcing Segmentation");
+                        Console.ForegroundColor = OriColor;
+                    }
+
                     Entry.SegmentsInfo = new NPKSegmentInfo[1 + (Entry.FileSize / MaxSectionSize)];
+                    Entry.SegmentationMode = (byte)(Entry.SegmentsInfo.Length > 1 ? 0 : 1);
                     for (int x = 0; x < Entry.SegmentsInfo.Length; x++)
                     {
                         uint MaxBytes = Reaming < MaxSectionSize ? (uint)Reaming : MaxSectionSize;
