@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -143,6 +144,7 @@ namespace NPK3Tool
             if (NPK.CurrentKey != null)
                 return;
 
+            int Custom = 0;
             int Current = 0;
             if (Games.Length > 1)
             {
@@ -151,8 +153,18 @@ namespace NPK3Tool
                     Console.WriteLine($"Type {Current++} to \"{Game.Game}\"");
                 }
 
+                Console.WriteLine($"Type {Custom = Current} to manually specify a encryption key.");
+
                 while (!int.TryParse(Console.ReadLine(), out Current))
                     continue;
+            }
+
+            if (Current == Custom) {
+                Console.WriteLine("Type the 256bits key hex:");
+                NPK.SetKey(Console.ReadLine());
+                Console.WriteLine("Use what encoding to read the NPK? (UTF8/SJIS)");
+                NPK.SetEncoding(Console.ReadLine());
+                return;
             }
 
             Console.WriteLine($"Game \"{Games[Current].Game}\" Selected");

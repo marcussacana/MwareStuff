@@ -212,6 +212,10 @@ namespace NPK3Tool
             if (OutDir == null)
                 OutDir = Path.Combine(Path.GetDirectoryName(Package), Path.GetFileName(Package) + "~");
 
+            if (new FileInfo(Package).IsReadOnly) {
+                throw new Exception("Can't Unpack Read-Only Files");
+            }
+
             using (Stream NPK = File.Open(Package, FileMode.Open))
             {
                 switch (NPK.ReadUInt32(0)) {
