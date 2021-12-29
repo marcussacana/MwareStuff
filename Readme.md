@@ -15,9 +15,10 @@ A brute tool that aim to translate NUT files
 - Tokyo Necro
 - Minikui Mojika no Ko
 - SoniComi (JastUSA)
-- The Song of Saya (Steam)
+- The Song of Saya (Steam and Steam +18)
 - Kishin Houkou Demonbane
 - DRAMAtical Murder (Jast USA)
+- Full Metal Daemon Muramasa (Jast USA)
 
 ### MwareHook
 StringReloads Plugin to try find the game key
