@@ -5,16 +5,17 @@
 ### 2. Navigate to your game's exe file and drag and drop it onto the MwareKeyFinder tool (SRLInjector.exe).
 
 ### 3. You will receive a message showing you the key for the game. 
-    Copy and paste the message into a text editor.
-    Remove the "0x" and commas. Save it and this will be the key to extract the game.
+    Copy and paste the message into an empty text file.
+    Remove the "0x" and commas manually.
+    Save the remaining text and this will be the key to extract the game.
 
 ### 4. Drag the npk file you want to extract onto the NPK3Tool.exe file.
     Options will pop up so select the option corresponding to your game. If it is not there, type 11.
   
 ### 5. If asked for the key, copy/paste the key.
     Select between SJIS and UTF-8.
-  
-### 6. The file's contents will be extracted into a new folder.
+    Most of the time UTF-8 should be selected. If text is not correct, select the other option.
+### 6. The npk file's contents will be extracted into a new folder.
     Folder will end with a "~".
 
 # How To Repack NPK Files
