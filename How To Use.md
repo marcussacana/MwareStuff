@@ -5,6 +5,8 @@
 ### 2. Navigate to your game's exe file and drag and drop it onto the MwareKeyFinder tool (SRLInjector.exe).
 
 ### 3. You will receive a message showing you the key for the game. 
+    <img width="267" alt="Screen Shot 2023-02-12 at 3 09 40 PM" src="https://user-images.githubusercontent.com/58484338/218334571-9c367678-8a3a-4abe-adb3-2996945d6cda.png">
+
     Copy and paste the message into an empty text file.
     Remove the "0x" and commas manually.
     Save the remaining text and this will be the key to extract the game.
