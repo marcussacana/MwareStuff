@@ -13,12 +13,14 @@ A brute tool that aim to translate NUT files
 #### Supported Games
 - You and Me and Her (Totono JastUSA and Steam)
 - Tokyo Necro
+- Tokyo Necro (Jast USA)
 - Minikui Mojika no Ko
 - SoniComi (JastUSA)
 - The Song of Saya (Steam and Steam +18)
 - Kishin Houkou Demonbane
 - DRAMAtical Murder (Jast USA)
 - Full Metal Daemon Muramasa (Jast USA)
+- Slow Damage (Jast USA)
 
 ### MwareHook
 StringReloads Plugin to try find the game key
