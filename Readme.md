@@ -21,6 +21,7 @@ A brute tool that aim to translate NUT files
 - DRAMAtical Murder (Jast USA)
 - Full Metal Daemon Muramasa (Jast USA)
 - Slow Damage (Jast USA)
+- sweet pool (Jast)
 
 ### MwareHook
 StringReloads Plugin to try find the game key
