@@ -22,6 +22,7 @@ A brute tool that aim to translate NUT files
 - Full Metal Daemon Muramasa (Jast USA)
 - Slow Damage (Jast USA)
 - sweet pool (Jast)
+- Togainu no Chi (Jast USA)
 
 ### MwareHook
 StringReloads Plugin to try find the game key
