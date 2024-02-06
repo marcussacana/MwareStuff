@@ -41,7 +41,8 @@ namespace NPK3Tool
                         Console.WriteLine("-KY [256bit hex]\t\t\tSet a custom encyption key");
                         Console.WriteLine("-VS [3/2]\t\t\t\tSet the NPK repack version");
                         Console.WriteLine("-MV [1/2]\t\t\t\tSet the NPK repack minor version");
-                        Console.WriteLine("-SG [1/0]\t\t\t\tEnable/Disable NPK Segmentation");
+                        Console.WriteLine("-SG [1/0]\t\t\t\tEnable/Disable NPK Segmentation (Auto)");
+                        Console.WriteLine("-FG [1/0]\t\t\t\tEnable/Disable NPK Segmentation (Forced)");
                         Console.WriteLine("-CP [1/0]\t\t\t\tEnable/Disable NPK Compression");
                         Console.WriteLine("-GM 0\t\t\t\t\tSet the NPK Game ID");
                         Console.WriteLine();
@@ -52,9 +53,12 @@ namespace NPK3Tool
                         }
 
                         Console.WriteLine();
+                        var Color = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("It's hard?");
                         Console.WriteLine("... then just Drag&Drop");
                         Console.WriteLine();
+                        Console.ForegroundColor = Color;
                         Console.WriteLine("Debug:");
                         Console.WriteLine("-DumpTable Input.npk\t\t\tDump File Table from the NPK");
                         Console.ReadKey();
@@ -97,6 +101,10 @@ namespace NPK3Tool
                     case "sg":
                         string SG = args[++i].Trim().ToLower();
                         NPK.EnableSegmentation = SG == "1" || SG == "true" || SG == "yes" || SG == "y";
+                        break;
+                    case "fg":
+                        string FG = args[++i].Trim().ToLower();
+                        NPK.ForceSegmentation = FG == "1" || FG == "true" || FG == "yes" || FG == "y";
                         break;
                     case "cp":
                         string CP = args[++i].Trim().ToLower();

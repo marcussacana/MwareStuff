@@ -12,6 +12,7 @@ namespace NPK3Tool
     {
         public static bool EnableCompression = true;
         public static bool EnableSegmentation = true;
+        public static bool ForceSegmentation = true;
         public static int NPKVersion = 3;
         public static uint NPKMinorVersion = 1;//Not Sure
         public static uint MaxSectionSize = 0x10000;
@@ -152,7 +153,7 @@ namespace NPK3Tool
                 Entry.SHA256 = Streams[i].SHA256Checksum();
 
                 long Reaming = Entry.FileSize;
-                if (EnableSegmentation || Reaming > uint.MaxValue)
+                if (EnableSegmentation || Reaming > uint.MaxValue || ForceSegmentation)
                 {
                     if (!EnableSegmentation) {
                         var OriColor = Console.ForegroundColor;
@@ -163,6 +164,10 @@ namespace NPK3Tool
 
                     Entry.SegmentsInfo = new NPKSegmentInfo[1 + (Entry.FileSize / MaxSectionSize)];
                     Entry.SegmentationMode = (byte)(Entry.SegmentsInfo.Length > 1 ? 0 : 1);
+
+                    if (ForceSegmentation)
+                        Entry.SegmentationMode = 0;
+
                     for (int x = 0; x < Entry.SegmentsInfo.Length; x++)
                     {
                         uint MaxBytes = Reaming < MaxSectionSize ? (uint)Reaming : MaxSectionSize;
