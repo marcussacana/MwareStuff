@@ -15,6 +15,7 @@ A brute tool that aim to translate NUT files
 - Tokyo Necro
 - Tokyo Necro (Jast USA)
 - Minikui Mojika no Ko
+- Mojika: Truth Rears Its Ugly Head (Steam)
 - SoniComi (JastUSA)
 - The Song of Saya (Steam and Steam +18)
 - Kishin Houkou Demonbane
