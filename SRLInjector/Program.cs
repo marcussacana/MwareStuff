@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,13 +17,76 @@ namespace SRLInjector
             if (args == null || args.Length == 0 || !File.Exists(args.First()))
             {
                 Console.WriteLine("Drag&Drop the Game Executable");
-                Console.ReadKey();
+                WaitKey();
                 return;
             }
 
             var InjectorDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string FullExePath = Path.GetFullPath(args.First());
+            string Dir = Path.GetDirectoryName(FullExePath);
 
-            string[] SRLPaths = new string[] { "SRLWrapper.dll", "SRLx32.dll" };
+            bool is64 = Is64Bit(FullExePath);
+
+            if (is64 && !Environment.Is64BitProcess)
+            {
+                string x64Exe = Path.Combine(InjectorDirectory, "SRLInjectorX64.exe");
+                if (File.Exists(x64Exe))
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = x64Exe,
+                        Arguments = string.Join(" ", args.Select(a => $"\"{a}\"")),
+                        UseShellExecute = false,
+                        WorkingDirectory = Environment.CurrentDirectory
+                    };
+                    var proc = Process.Start(psi);
+                    proc.WaitForExit();
+                    Environment.ExitCode = proc.ExitCode;
+                    return;
+                }
+                else
+                {
+                    var oriColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The target game is 64-bit, but SRLInjectorX64.exe was not found in the current directory!");
+                    Console.ForegroundColor = oriColor;
+                    WaitKey();
+                    return;
+                }
+            }
+
+            if (!is64 && Environment.Is64BitProcess)
+            {
+                string x86Exe = Path.Combine(InjectorDirectory, "SRLInjector.exe");
+                if (File.Exists(x86Exe))
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = x86Exe,
+                        Arguments = string.Join(" ", args.Select(a => $"\"{a}\"")),
+                        UseShellExecute = false,
+                        WorkingDirectory = Environment.CurrentDirectory
+                    };
+                    var proc = Process.Start(psi);
+                    proc.WaitForExit();
+                    Environment.ExitCode = proc.ExitCode;
+                    return;
+                }
+                else
+                {
+                    var oriColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The target game is 32-bit, but SRLInjector.exe was not found in the current directory!");
+                    Console.ForegroundColor = oriColor;
+                    WaitKey();
+                    return;
+                }
+            }
+
+            string[] SRLPaths = is64
+                ? new string[] { "SRLx64.dll", "SRLWrapper.dll" }
+                : new string[] { "SRLWrapper.dll", "SRLx32.dll" };
+
             string SRLPath = null;
             foreach (var SRL in SRLPaths)
             {
@@ -37,27 +100,24 @@ namespace SRLInjector
 
             if (SRLPath == null)
             {
-                Console.WriteLine("SRL Not Found in the Current Directory");
-                Console.ReadKey();
+                Console.WriteLine($"SRL ({(is64 ? "SRLx64.dll" : "SRLx32.dll")}) Not Found in the Current Directory");
+                WaitKey();
                 return;
             }
 
             if (!File.Exists(Path.Combine(InjectorDirectory, "SRL.ini")))
             {
                 Console.WriteLine("SRL.ini Not Found in the Current Directory");
-                Console.ReadKey();
+                WaitKey();
                 return;
             }
 
             if (!File.Exists(Path.Combine(InjectorDirectory, "Plugins", "MwareHook.dll")))
             {
                 Console.WriteLine("MwareHook.dll Not Found in the \"Plugins\" Directory");
-                Console.ReadKey();
+                WaitKey();
                 return;
             }
-
-            string FullExePath = Path.GetFullPath(args.First());
-            string Dir = Path.GetDirectoryName(FullExePath);
 
 
             var Exe = File.ReadAllBytes(FullExePath);
@@ -71,7 +131,7 @@ namespace SRLInjector
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("This Game is protected with the Steam Stub DRM\nTo the Key Finder works you must crack it before.");
                     Console.ForegroundColor = OriForeColor;
-                    Console.ReadKey();
+                    WaitKey();
                     return;
                 }
             }
@@ -97,6 +157,32 @@ namespace SRLInjector
                     return false;
 
             return true;
+        }
+
+        private static bool Is64Bit(string filePath)
+        {
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var br = new BinaryReader(fs))
+            {
+                fs.Seek(0x3c, SeekOrigin.Begin);
+                int peOffset = br.ReadInt32();
+                fs.Seek(peOffset, SeekOrigin.Begin);
+                uint peHead = br.ReadUInt32();
+                if (peHead != 0x00004550) // "PE\0\0"
+                    throw new Exception("Invalid PE header");
+
+                ushort machine = br.ReadUInt16();
+                return machine == 0x8664 || machine == 0x0200; // AMD64 or IA64
+            }
+        }
+
+        private static void WaitKey()
+        {
+            try
+            {
+                Console.ReadKey();
+            }
+            catch { }
         }
     }
 }

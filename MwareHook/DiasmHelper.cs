@@ -1,6 +1,6 @@
-﻿using Iced.Intel;
+using Iced.Intel;
 using StringReloads.Hook.Base;
-using System.Linq;
+using System;
 
 namespace MwareHook
 {
@@ -8,17 +8,28 @@ namespace MwareHook
     {
         MemoryCodeReader Reader;
         Decoder Decoder;
-        public DiasmHelper(void* Address) {
+
+        public DiasmHelper(void* Address) : this(Address, Environment.Is64BitProcess ? 64 : 32) { }
+
+        public DiasmHelper(void* Address, int bitness)
+        {
+            if (bitness != 32 && bitness != 64)
+                bitness = Environment.Is64BitProcess ? 64 : 32;
+
             Reader = new MemoryCodeReader(Address);
-            Decoder = Decoder.Create(32, Reader);
+            Decoder = Decoder.Create(bitness, Reader);
+            Decoder.IP = (ulong)Address;
         }
 
-        public Instruction Diassembly() {
-            return Decoder.DecodeAmount(1).Single();
+        public Instruction Diassembly()
+        {
+            return Decoder.Decode();
         }
 
-        public void Reset() {
+        public void Reset()
+        {
             Reader.Reset();
         }
     }
 }
+

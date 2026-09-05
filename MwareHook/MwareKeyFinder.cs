@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using Iced.Intel;
 using StringReloads.Engine;
 using StringReloads.Engine.Interface;
+using StringReloads.Engine.Unmanaged;
 
 namespace MwareHook
 {
@@ -51,7 +52,14 @@ namespace MwareHook
                     }
                 }
 
-                Info = ModuleInfo.GetCodeInfo(MainModule.BaseAddress.ToPointer());
+                Info = ModuleInfo.GetCodeInfo((byte*)MainModule.BaseAddress.ToPointer());
+
+                if (TryFindKeyViaSteamClient(MainModule, out byte[] steamKey))
+                {
+                    OnKeyIntercepted(steamKey);
+                    return;
+                }
+
                 if (!Scan(out Address))
                 {
                     Log.Warning("Failed to find the KeyExpander Function, Trying WinMain Method...");
@@ -73,6 +81,119 @@ namespace MwareHook
 
             if (MInterceptor != null)
                 MInterceptor.Install();
+        }
+
+        private bool TryFindKeyViaSteamClient(ProcessModule mainModule, out byte[] key)
+        {
+            key = null;
+            try
+            {
+                var callers = SteamHelper.FindSteamClientCallers(mainModule);
+                if (callers == null || callers.Count == 0)
+                {
+                    Log.Trace("No SteamClient callers found.");
+                    return false;
+                }
+
+                int bitness = Environment.Is64BitProcess ? 64 : 32;
+                foreach (var caller in callers)
+                {
+                    void* pCaller = caller.ToPointer();
+                    Log.Debug($"Analyzing SteamClient caller at 0x{(ulong)pCaller:X}...");
+                    if (TryExtractKeyFromDisassembly(pCaller, bitness, out key))
+                    {
+                        Log.Debug($"Key successfully extracted from SteamClient caller at 0x{(ulong)pCaller:X}!");
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"Error while scanning for SteamClient key: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        public static bool TryExtractKeyFromDisassembly(void* pCaller, int bitness, out byte[] key)
+        {
+            key = null;
+            if (pCaller == null)
+                return false;
+
+            try
+            {
+                var diasm = new DiasmHelper(pCaller, bitness);
+                var dwords = new Dictionary<(Register baseReg, long disp), uint>();
+
+                int tries = 0;
+                const int maxInstructions = 1000;
+
+                while (tries < maxInstructions)
+                {
+                    tries++;
+                    Instruction instruction = diasm.Diassembly();
+
+                    if (instruction.IsInvalid)
+                        break;
+
+                    // Check for mov dword ptr [base + disp], imm32
+                    if (instruction.Code == Code.Mov_rm32_imm32 &&
+                        instruction.Op0Kind == OpKind.Memory &&
+                        instruction.MemoryIndex == Register.None)
+                    {
+                        Register baseReg = instruction.MemoryBase;
+                        long disp = bitness == 64
+                            ? (long)instruction.MemoryDisplacement64
+                            : (long)(int)instruction.MemoryDisplacement32;
+                        uint val = instruction.Immediate32;
+
+                        dwords[(baseReg, disp)] = val;
+                        Log.Trace($"Found key candidate dword: [{baseReg}+0x{disp:X}] = 0x{val:X8} at 0x{instruction.IP:X}");
+
+                        // Check if this completes an 8-dword consecutive sequence
+                        for (int offset = 0; offset <= 28; offset += 4)
+                        {
+                            long baseDisp = disp - offset;
+                            bool foundAll = true;
+                            byte[] candidateKey = new byte[0x20];
+
+                            for (int i = 0; i < 8; i++)
+                            {
+                                if (dwords.TryGetValue((baseReg, baseDisp + (i * 4)), out uint dwordVal))
+                                {
+                                    BitConverter.GetBytes(dwordVal).CopyTo(candidateKey, i * 4);
+                                }
+                                else
+                                {
+                                    foundAll = false;
+                                    break;
+                                }
+                            }
+
+                            if (foundAll)
+                            {
+                                Log.Debug($"Encryption key found at [{baseReg}+0x{baseDisp:X}] after {tries} instructions!");
+                                key = candidateKey;
+                                return true;
+                            }
+                        }
+                    }
+
+                    // Stop if function returns without finding candidates
+                    if (instruction.Code == Code.Retnq || instruction.Code == Code.Retnd)
+                    {
+                        if (dwords.Count == 0 && tries > 50)
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"Exception during key disassembly: {ex.Message}");
+            }
+
+            return false;
         }
 
         void OnKeyIntercepted(byte[] Key)
@@ -100,6 +221,13 @@ namespace MwareHook
                 return;
 
             MInterceptor.Uninstall();
+
+            // Try the updated non-contiguous extraction first
+            if (TryExtractKeyFromDisassembly(pCaller, 32, out byte[] key))
+            {
+                OnKeyIntercepted(key);
+                return;
+            }
 
             Helper = new DiasmHelper(pCaller);
 
