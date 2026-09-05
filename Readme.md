@@ -19,18 +19,20 @@ A brute tool that aim to translate NUT files
 - SoniComi (JastUSA)
 - The Song of Saya (Steam and Steam +18)
 - Kishin Houkou Demonbane
-- DRAMAtical Murder (Jast USA)
+- DRAMAtical Murder (Jast USA and Steam)
 - Full Metal Daemon Muramasa (Jast USA)
 - Slow Damage (Jast USA)
 - sweet pool (JastUSA and Steam)
-- Togainu no Chi Lost Blood (JastUSA and Steam)
-- Togainu no Chi True Blood (Steam)
+- Togainu no Chi –Lost Blood– (JastUSA and Steam)
+- Togainu no Chi True Blood NITRO ARCHIVE (Steam)
+- Jingai Makyou - Windows 10 Support Edition
+- Phantom -PHANTOM OF INFERNO- NITRO ARCHIVE (Steam)
 
 ### MwareHook
 StringReloads Plugin to try find the game key
 
 ### SRLInjector
-A User-Friendly Loader to the **MwareHook**
+A User-Friendly Loader to the **MwareHook** (Supports both x86 and x64 games)
 
 
 ### Notes:
