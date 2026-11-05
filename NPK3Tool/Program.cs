@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +9,7 @@ namespace NPK3Tool
 {
     static class Program
     {
-        //The "MinorVersion" is just something that I suposed, and i'm not sure, maybe that is just a flag
+        // The "MinorVersion" is just something that I suposed, and i'm not sure, maybe that is just a flag
         static string CurrentExe => Path.GetFileName(Assembly.GetExecutingAssembly().Location);
         static void Main(string[] args)
         {
@@ -21,6 +22,37 @@ namespace NPK3Tool
 
             if (args == null || args.Length == 0)
                 args = new[] { "-h" };
+
+            // Opt-in only. Read this switch before the original, order-sensitive parser,
+            // so "-TM 1" works before or after "-r" and in drag-and-drop commands.
+            var filteredArgs = new List<string>();
+            for (int j = 0; j < args.Length; j++)
+            {
+                string option = args[j].ToLowerInvariant().TrimStart('-', '/', '\\');
+                if (option != "tm")
+                {
+                    filteredArgs.Add(args[j]);
+                    continue;
+                }
+                if (j + 1 >= args.Length || (args[j + 1] != "0" && args[j + 1] != "1"))
+                    throw new ArgumentException("-TM requires 0 or 1.");
+                NPK.TemplateMode = args[++j] == "1";
+            }
+            args = filteredArgs.ToArray();
+
+            if (NPK.TemplateMode)
+            {
+                foreach (string arg in args)
+                {
+                    string option = arg.ToLowerInvariant().TrimStart('-', '/', '\\');
+                    if (option == "vs" || option == "mv" || option == "iv")
+                        Console.WriteLine($"[Template] -{option.ToUpperInvariant()} is overridden by the original NPK header.");
+                    else if (option == "ms" || option == "sg" || option == "fg")
+                        Console.WriteLine($"[Template] -{option.ToUpperInvariant()} may be overridden by inferred source segmentation for added files; existing files use original boundaries.");
+                    else if (option == "cp")
+                        Console.WriteLine("[Template] -CP affects newly added files only; existing files use the original compression policy.");
+                }
+            }
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -45,13 +77,13 @@ namespace NPK3Tool
                         Console.WriteLine("-FG [1/0]\t\t\t\tEnable/Disable NPK Segmentation (Forced)");
                         Console.WriteLine("-CP [1/0]\t\t\t\tEnable/Disable NPK Compression");
                         Console.WriteLine("-GM 0\t\t\t\t\tSet the NPK Game ID");
+                        Console.WriteLine("-TM [1/0]\t\t\tUse original NPK header and per-file layout (opt-in)");
                         Console.WriteLine();
                         Console.WriteLine("Valid Game IDs:");
                         for (int x = 0; x < Games.Length; x++)
                         {
                             Console.WriteLine($"{x}: {Games[x].Game}");
                         }
-
                         Console.WriteLine();
                         var Color = Console.ForegroundColor;
                         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -160,9 +192,7 @@ namespace NPK3Tool
                 {
                     Console.WriteLine($"Type {Current++} to \"{Game.Game}\"");
                 }
-
                 Console.WriteLine($"Type {Custom = Current} to manually specify a encryption key.");
-
                 while (!int.TryParse(Console.ReadLine(), out Current))
                     continue;
             }
@@ -268,7 +298,7 @@ namespace NPK3Tool
             }, Encoding.UTF8            , 2, true, 2u),
             ("Phantom PHANTOM OF INFERNO NITRO ARCHIVE (Steam)", new byte[] {
                 0x92, 0x91, 0x93, 0xCA, 0xED, 0xAC, 0x4D, 0x3D, 0xF2, 0x97, 0x48, 0x0B, 0xF5, 0xC3, 0xE7, 0x5C,
-                0x80, 0x77, 0x26, 0x85, 0x7A, 0x26, 0x6E, 0x47, 0x74, 0xDC, 0x19, 0x0C, 0x06, 0x3B, 0x46, 0xA9 
+                0x80, 0x77, 0x26, 0x85, 0x7A, 0x26, 0x6E, 0x47, 0x74, 0xDC, 0x19, 0x0C, 0x06, 0x3B, 0x46, 0xA9
             }, Encoding.UTF8            , 3, true, 1u),
         };
     }
